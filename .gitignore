@@ -1,32 +1,16 @@
-# Prerequisites
-*.d
+# Directories
+.vs/
+.vscode/
+bin*/
+logs/
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# Files
+*.user
+*.DS_STORE
+*.xcworkspace/
+*.xcodeproj/
+*.vcxproj*
+*.sln
+*Makefile
 
-# Precompiled Headers
-*.gch
-*.pch
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+*.pyc
