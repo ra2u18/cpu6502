@@ -1,5 +1,4 @@
 #pragma once
-#include "memory_bus.h"
 
 #include <cstdint>
 #include <memory>
@@ -7,11 +6,13 @@
 #include <stdio.h>
 #include <vector>
 
+
 namespace cpu6205::core
 {
+	class Bus;
+
 	using Word = uint16_t;
 	using Byte = uint8_t;
-	using bus = cpu6205::core::memory::Bus;
 
 	class CPU
 	{
@@ -52,16 +53,25 @@ namespace cpu6205::core
 			V = (1 << 6),	// Overflow
 			N = (1 << 7),	// Negative
 		};
+
+		static constexpr Byte INS_LDA_IMM = 0xA9;
+		static constexpr Byte INS_LDA_ZP = 0xA5;
+		static constexpr Byte INS_LDA_ZPX = 0xB5;
+		static constexpr Byte INS_JSR = 0x20;
+	
 	public:
 		/*	
 			External event functions, in hardware these are pins asserted into the microprocessor
 			to produce a change in state
 		*/
 		void Reset(); // Reset Interrupt - Forces CPU into initial known state
-		void ConnectBus(std::shared_ptr<bus> b) { mBus = std::move(b); }
+		void ConnectBus(Bus* busptr) { mBus = busptr; }
+		void Execute(uint32_t cycles);
 	private:
-		uint8_t GetFlag(FLAGS6205 f);
-		void	SetFlag(FLAGS6205 f, bool v);
+		uint8_t getFlag(FLAGS6205 f);
+		void	setFlag(FLAGS6205 f, bool v);
+
+		Byte fetchByte(uint32_t& cycles);
 
 		uint8_t		cycles = 0;			// How many cycles the instruction has remaining
 		uint32_t	clock_count = 0;	// Global accumulation of the nb. of cycles 
@@ -75,12 +85,11 @@ namespace cpu6205::core
 		};
 
 		std::vector<INSTRUCTION> lookup;
-	private:
+
 		// Communication bus interface
-		std::shared_ptr<bus> mBus = nullptr;
+		Bus* mBus;
+
 		Byte read(Word address);
 		void write(Word address, Byte data);
-
-		void IMM();
 	};
 }
